@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NotesList from './components/NoteList';
 import { v4 as uuidv4 } from 'uuid';
 import './App.css';
+import Search from './components/Search'; // --- 1. IMPORT SEARCH ---
 
 const App = () => {
     const [notes, setNotes] = useState(() => {
@@ -11,6 +12,9 @@ const App = () => {
         );
         return savedNotes || [];
     });
+    
+    // --- 2. ADD NEW STATE FOR SEARCH TEXT ---
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
         localStorage.setItem(
@@ -35,9 +39,8 @@ const App = () => {
         setNotes(newNotes);
     };
 
-    // --- NEW FUNCTION TO ADD ---
     const updateNote = (id, newText) => {
-        const newNotes = notes.map((note) => 
+        const newNotes = notes.map((note) =>
             note.id === id ? { ...note, text: newText } : note
         );
         setNotes(newNotes);
@@ -46,11 +49,16 @@ const App = () => {
     return (
         <div className='container'>
             <h1>Nexx Notes</h1>
+            {/* --- 3. RENDER THE SEARCH COMPONENT --- */}
+            <Search handleSearchNote={setSearchText} />
             <NotesList
-                notes={notes}
+                // --- 4. PASS THE FILTERED NOTES ---
+                notes={notes.filter((note) =>
+                    note.text.toLowerCase().includes(searchText.toLowerCase())
+                )}
                 handleAddNote={addNote}
                 handleDeleteNote={deleteNote}
-                handleUpdateNote={updateNote} // --- PASS THE NEW FUNCTION ---
+                handleUpdateNote={updateNote}
             />
         </div>
     );
